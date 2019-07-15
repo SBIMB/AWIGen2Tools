@@ -2,10 +2,6 @@ package za.org.wits.sbimb.awigen.spirometry.util;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -38,10 +34,9 @@ public class Xml2CsvConverterTest {
 
 	@Test
 	public void testGetStylesheet() {
-		Xml2CsvConverter xml2CsvConverter = new Xml2CsvConverter();
 		String filePath = "XmlToCsv-Example_EN_Format.xsl";
 		
-		assertEquals(null, xml2CsvConverter.getStylesheet(filePath), "File should not be null");
+		assertEquals(null, Xml2CsvConverter.getStylesheet(filePath), "File should not be null");
 	}
 
 	@Test

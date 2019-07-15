@@ -14,7 +14,7 @@ public class ui {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SpirometryUI 
+		SpirometryUI  
 
 	}
 

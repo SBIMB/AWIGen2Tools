@@ -53,12 +53,13 @@ public class Xml2CsvConverter {
 	}
 	
 	public String convert(File xmlSource){ 
+		String xmlOutputStr = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder;
 		getStylesheet("C:/Users/A0035863/Documents/Software Development Projects/JAVA/AWIGen2Tools/AWIGen2Tools/Spirometry/src/main/resources/XmlToCsv-Example_EN_Format.xsl");
 		try {
 				StringWriter stringWriter = new StringWriter();
-				String xmlOutputStr = null;
+				
 				builder = factory.newDocumentBuilder();
 				Document document = builder.parse(xmlSource);
 
@@ -89,6 +90,6 @@ public class Xml2CsvConverter {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		return null;
+		return xmlOutputStr;
 	}
 }

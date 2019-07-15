@@ -4,12 +4,8 @@
 package za.org.wits.sbimb.awigen.spirometry;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
 import za.org.wits.sbimb.awigen.spirometry.util.Xml2CsvConverter;
 
 /**
