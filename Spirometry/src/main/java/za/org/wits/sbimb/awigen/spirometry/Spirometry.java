@@ -3,10 +3,14 @@
  */
 package za.org.wits.sbimb.awigen.spirometry;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import za.org.wits.sbimb.awigen.spirometry.util.Xml2CsvConverter;
 
 /**
  * @author Freedom Mukomana
@@ -17,12 +21,11 @@ public class Spirometry {
 	/**
 	 * @param args
 	 */
+	Xml2CsvConverter xml2CsvConverter = new Xml2CsvConverter();
 	public static void main(String[] args) {
 		Spirometry spirometry = new Spirometry();
-		
-		
-		
-		//spirometry.countBeforeValidBlows(lines);
+						
+		spirometry.convertXmlToCsv();
 	}
 	
 	void countBeforeValidBlows(List<String> lines){
@@ -49,6 +52,14 @@ public class Spirometry {
 			participantBlows.add(numOfBlows);
 		}
 		
+	}
+	
+	void convertXmlToCsv(){
+		String filePath = "C:/Users/A0035863/Documents/SBIMB/AWI-Gen/AWIGen2/SOWETO/Spirometry/Spirometry_XML_Export_2019-04-04_DPHRU_2.xml";
+		//Get XML file to convert
+		File xmlSourceFile = xml2CsvConverter.getXmlFile(filePath);
+		
+		xml2CsvConverter.convert(xmlSourceFile);
 	}
 
 }
