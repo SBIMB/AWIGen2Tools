@@ -51,11 +51,12 @@ public class Spirometry {
 	}
 	
 	void convertXmlToCsv(){
-		String filePath = "C:/Users/A0035863/Documents/SBIMB/AWI-Gen/AWIGen2/SOWETO/Spirometry/Spirometry_XML_Export_2019-04-04_DPHRU_2.xml";
+		String filePath = "C:/Users/A0035863/Documents/SBIMB/AWI-Gen/AWIGen2/DIMAMO/Spirometry/Dimamo_2019-07-10.xml";
+		String output = null;
 		//Get XML file to convert
 		File xmlSourceFile = xml2CsvConverter.getXmlFile(filePath);
 		
-		xml2CsvConverter.convert(xmlSourceFile);
+		output=xml2CsvConverter.convert(xmlSourceFile, "file");
 	}
 
 }

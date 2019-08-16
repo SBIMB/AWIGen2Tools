@@ -1,7 +1,7 @@
 /**
  * 
  */
-package za.org.wits.sbimb;
+package za.org.wits.sbimb.service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,7 +13,7 @@ import java.util.List;
  * @author Freedom Mukomana
  *
  */
-public class FileContentReader {
+public class TextFileContentReader implements ITextFileContentReader{
 	
 	public List<String> getContentsByLine(FileReader fr){
 		

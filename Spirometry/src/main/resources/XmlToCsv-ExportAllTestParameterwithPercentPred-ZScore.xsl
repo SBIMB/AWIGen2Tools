@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="text" encoding="UTF-8" omit-xml-declaration="yes" />
-  <xsl:param name="ColumnSeparator" select="';'" /> <!-- this needs to be changed, depending on your regional setting e.g. to ','-->
+  <xsl:param name="ColumnSeparator" select="','" /> <!-- this needs to be changed, depending on your regional setting e.g. to ','-->
 
   <xsl:template match="/">
     <!-- Title (first row) -->
@@ -21,11 +21,15 @@
     <xsl:value-of select="$ColumnSeparator" />
     <xsl:text>Ethnicity</xsl:text>
     <xsl:value-of select="$ColumnSeparator" />
+	<xsl:text>Lung Age</xsl:text>
+    <xsl:value-of select="$ColumnSeparator" />
 
     <xsl:text>Test Type</xsl:text>
     <xsl:value-of select="$ColumnSeparator" />
     <xsl:text>Test Date</xsl:text>
     <xsl:value-of select="$ColumnSeparator" />
+	<xsl:text>Test Time:</xsl:text>
+    <xsl:value-of select="$ColumnSeparator"/>
     <xsl:text>Sequence in session</xsl:text>
     <xsl:value-of select="$ColumnSeparator" />
 
@@ -355,9 +359,7 @@
     <xsl:value-of select="$ColumnSeparator" />
     <xsl:text>VT/kg</xsl:text>
     <xsl:value-of select="$ColumnSeparator" />
-	
-	
-	
+		
 	<!-- added by TKa from ndd Zurich 01.03.2018 -->
 	<xsl:text>FEV1 Pred</xsl:text>
     <xsl:value-of select="$ColumnSeparator" />
@@ -410,16 +412,33 @@
       <xsl:value-of select="$ColumnSeparator" />
 
       <xsl:value-of select="PatientDataAtTestTime/Ethnicity"/>
-      <xsl:value-of select="$ColumnSeparator" />     
+      <xsl:value-of select="$ColumnSeparator" />   
+
+	  <!--<xsl:text> Lung age:</xsl:text>-->
+      <xsl:value-of select="../../LungAge"/>
+	  <xsl:value-of select="$ColumnSeparator" />   	  
+	  
       <!-- == Trial/Test Information == -->
       
       <!-- Test Type-->
       <xsl:value-of select="@TypeOfTest"/>
       <xsl:value-of select="$ColumnSeparator" />
 
-      <!-- Date -->
+      <!-- Date 
       <xsl:value-of select="TestDate"/>
       <xsl:value-of select="$ColumnSeparator" />
+	  -->
+<!--  Test Date: -->
+      <xsl:variable name="TestDate"
+                   select="TestDate"/>
+      <!--  Test Date: 
+      <xsl:value-of select="java:format(java:java.text.SimpleDateFormat.new('yyyy.MM.dd'), java:java.text.SimpleDateFormat.)"/>-->
+	  <xsl:value-of select="concat(substring-before($TestDate,'T'))"/>
+      <xsl:value-of select="$ColumnSeparator"/>
+
+      <!-- <xsl:value-of select="format-dateTime($testtime, $TimeFormat, 'en','','')"/> -->
+	  <xsl:value-of select="substring($TestDate,12,8)"/>
+      <xsl:value-of select="$ColumnSeparator"/>
 
       <!-- index of test: 1: pre; 2: post -->
       <xsl:value-of select="count(preceding-sibling::Test)+1" />

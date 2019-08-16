@@ -3,9 +3,11 @@
  */
 package za.org.wits.sbimb.awigen.spirometry.util;
 
-import za.org.wits.sbimb.FileHandler;
+import za.org.wits.sbimb.dao.FileHandler;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -52,13 +54,15 @@ public class Xml2CsvConverter {
 		return stylesheet;
 	}
 	
-	public String convert(File xmlSource){ 
+	public String convert(File xmlSource, String destinationType){ 
 		String xmlOutputStr = null;
+		Result outputTarget = null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder;
-		getStylesheet("C:/Users/A0035863/Documents/Software Development Projects/JAVA/AWIGen2Tools/AWIGen2Tools/Spirometry/src/main/resources/XmlToCsv-Example_EN_Format.xsl");
+		getStylesheet("C:/Users/A0035863/Documents/Software Development Projects/JAVA/AWIGen2Tools/AWIGen2Tools/Spirometry/src/main/resources/XmlToCsv-ExportAllTestParameterwithPercentPred-ZScore.xsl");
 		try {
 				StringWriter stringWriter = new StringWriter();
+				BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("C:/Users/A0035863/Documents/SBIMB/AWI-Gen/AWIGen2/DIMAMO/Spirometry/howto.csv"));
 				
 				builder = factory.newDocumentBuilder();
 				Document document = builder.parse(xmlSource);
@@ -67,10 +71,17 @@ public class Xml2CsvConverter {
 				Transformer transformer = TransformerFactory.newInstance()
 					.newTransformer(stylesource);
 				Source source = new DOMSource(document);
-				Result outputTarget = new StreamResult(stringWriter);
-				//new File("C:/Users/A0035863/Documents/SBIMB/AWI-Gen/AWIGen2/SOWETO/Spirometry/howto.csv")
+				outputTarget = new StreamResult(stringWriter);
+								
 				transformer.transform(source, outputTarget);
 				xmlOutputStr = stringWriter.toString().replaceAll("\\r", "");
+				
+				if(destinationType=="file"){
+					bufferedWriter.write(xmlOutputStr);
+					bufferedWriter.close();
+				}
+				
+				System.out.println(xmlOutputStr);
 			} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

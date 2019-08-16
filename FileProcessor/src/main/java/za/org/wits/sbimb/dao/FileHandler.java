@@ -1,7 +1,7 @@
 /**
  * 
  */
-package za.org.wits.sbimb;
+package za.org.wits.sbimb.dao;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,5 +28,7 @@ public class FileHandler {
 		}		
 		return fr;
 	}
+	
+	
 	
 }
