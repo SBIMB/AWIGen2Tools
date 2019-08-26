@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,6 +20,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -29,7 +32,7 @@ import javafx.stage.Stage;
 /**
  * JavaFX App
  */
-public class App extends Application {
+public class Main extends Application {
 
 	 private Desktop desktop = Desktop.getDesktop();
 
@@ -38,17 +41,39 @@ public class App extends Application {
 			GridPane gridPane = null;
 			BorderPane borderPane = null;
 			TabPane tabPane = null;
+			FlowPane flowPane = new FlowPane();
+			flowPane.setAlignment(Pos.CENTER);
+			Button nextButton = new Button("Next");
+			Button cancelButton = new Button("Cancel");
+			Button finishButton = new Button("Finish");
+			
+					
+			nextButton.setPrefSize(100.00, 30.00);
+			cancelButton.setPrefSize(100.00, 30.00);
+			finishButton.setPrefSize(100.00, 30.00);
+			
+			nextButton.addEventHandler(arg0, arg1);
+			
+			flowPane.getChildren().add(nextButton);
+			flowPane.getChildren().add(cancelButton);
+			flowPane.getChildren().add(finishButton);
+			
+			flowPane.setHgap(10.00);
+			flowPane.setPadding(new Insets(10.00, 10.00, 10.00, 10.00));
 	        
 	        stage.setTitle("Shipment Handler");
-	        stage.getIcons().add(new Image(App.class.getResourceAsStream("/SBIMB Logo 2015.png")));
+	        stage.getIcons().add(new Image(Main.class.getResourceAsStream("/SBIMB Logo 2015.png")));
 
 	        //gridPane = getGridPane();
 	        borderPane = getBorderPane();
 	        tabPane = getTabPane(stage);
 	        
 	        borderPane.setCenter(tabPane);
+	        borderPane.setBottom(flowPane);
+	        
 	        //gridPane.add(tabPane, 0, 8);
 	        Scene scene = new Scene(borderPane, 640, 480);
+	     
 	        stage.setScene(scene);
 	        stage.show();
 	    }
@@ -58,7 +83,7 @@ public class App extends Application {
 				desktop.open(file);
 			} catch (IOException ex) {
 				Logger.getLogger(
-					App.class.getName()).log(
+					Main.class.getName()).log(
 		                    Level.SEVERE, null, ex
 		                );
 		        }
@@ -130,10 +155,13 @@ public class App extends Application {
 			final Button shipmentManifestBrowseBtn = new Button("Choose File");
 			final Label shipmentManifestFilePathBrowseLbl = new Label("No File Choosen");
 			final Label openingNote = new Label("Select the file containing data and click Next to continue.");
+			final Label closingNote = new Label("Note: Only Excel files are accepted. \n \nNote: Click 'Download Template' for an example file. Header columns are required");
+			
+			//gridPane.setPadding(new Insets(100, 100, 10, 10));
 			 //Shipment Manifest controllers(Label, Textbox and Button)
 	        //Label	
-			gridPane.add(openingNote, 1, 0);
-	        gridPane.add(shipmentManifestBrowseLbl, 1, 1);
+			gridPane.add(openingNote, 1, 0, 3, 3);
+	        gridPane.add(shipmentManifestBrowseLbl, 1, 4);
 	        	        
 	        //Button	        
 	        shipmentManifestBrowseBtn.setOnAction(
@@ -149,11 +177,37 @@ public class App extends Application {
 		        				}
 		        			}
 		        		});
-	        gridPane.add(shipmentManifestBrowseBtn, 2, 1);
+	        gridPane.add(shipmentManifestBrowseBtn, 2, 4);
 	        
 	        //Textbox 	        
-	        gridPane.add(shipmentManifestFilePathBrowseLbl, 2, 1);
-	      
+	        gridPane.add(shipmentManifestFilePathBrowseLbl, 3, 4);
+	     
+	        //cancelButton.setS
+	        
+	        gridPane.add(closingNote, 1, 5, 3, 3);
+	        gridPane.setAlignment(Pos.CENTER);
+	        gridPane.setPrefSize(960, 720);
+	        
+	        GridPane.setMargin(openingNote, new Insets(5, 5, 5, 5));
+	        GridPane.setMargin(shipmentManifestBrowseLbl, new Insets(5, 5, 5, 5));
+	        GridPane.setMargin(shipmentManifestBrowseBtn, new Insets(5, 5, 5, 5));
+	        GridPane.setMargin(shipmentManifestFilePathBrowseLbl, new Insets(5, 5, 5, 5));
+	        GridPane.setMargin(closingNote, new Insets(5, 5, 5, 5));
+
+	        ColumnConstraints column1 = new ColumnConstraints();
+	        column1.setPercentWidth(10);
+	        ColumnConstraints column2 = new ColumnConstraints();
+	        column2.setPercentWidth(30);
+	        ColumnConstraints column3 = new ColumnConstraints();
+	        column3.setPercentWidth(20);
+	        ColumnConstraints column4 = new ColumnConstraints();
+	        column4.setPercentWidth(30);
+	        ColumnConstraints column5 = new ColumnConstraints();
+	        column5.setPercentWidth(10);
+	        gridPane.getColumnConstraints().addAll(column1, column2, column3, column4, column5);
+	        
+	        gridPane.setGridLinesVisible(true);
+	        
 			return gridPane;
 		}
 		
