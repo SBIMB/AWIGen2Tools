@@ -12,6 +12,22 @@ public class Config
 	String API_FIELDS = "";
 	Integer API_REPORT_ID = 0;
 	
+	
+	
+	public Config(String aPI_TOKEN, String aPI_URL, String aPI_TYPE,
+			String aPI_FORMAT, String aPI_CONTENT, String aPI_RAWORLABEL,
+			String aPI_FIELDS, Integer aPI_REPORT_ID) {
+		super();
+		API_TOKEN = aPI_TOKEN;
+		API_URL = aPI_URL;
+		API_TYPE = aPI_TYPE;
+		API_FORMAT = aPI_FORMAT;
+		API_CONTENT = aPI_CONTENT;
+		API_RAWORLABEL = aPI_RAWORLABEL;
+		API_FIELDS = aPI_FIELDS;
+		API_REPORT_ID = aPI_REPORT_ID;
+	}
+	
 	public String getAPI_TOKEN() {
 		return API_TOKEN;
 	}

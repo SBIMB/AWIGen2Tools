@@ -7,7 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -19,6 +21,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
@@ -35,25 +38,34 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
 	 private Desktop desktop = Desktop.getDesktop();
-
+	 TabPane tabPane = null;
+	 GridPane gridPane = null;
+	 Scene scene = null;
+	 BorderPane borderPane = null;
+	 FlowPane flowPane = null;
+	 
+	 final float width = 600;
+	 
 		@Override
 	    public void start(final Stage stage) {
-			GridPane gridPane = null;
-			BorderPane borderPane = null;
-			TabPane tabPane = null;
-			FlowPane flowPane = new FlowPane();
+			
+						
+			flowPane = new FlowPane();
 			flowPane.setAlignment(Pos.CENTER);
+			flowPane.setVgap(10.00);
 			Button nextButton = new Button("Next");
 			Button cancelButton = new Button("Cancel");
 			Button finishButton = new Button("Finish");
-			
-					
+			Label feedbackLabel = new Label("test");
+								
+			feedbackLabel.setPrefSize(width, 50.00);
 			nextButton.setPrefSize(100.00, 30.00);
 			cancelButton.setPrefSize(100.00, 30.00);
 			finishButton.setPrefSize(100.00, 30.00);
 			
-			nextButton.addEventHandler(arg0, arg1);
+			feedbackLabel.setStyle("-fx-border-color: blue;");
 			
+			flowPane.getChildren().add(feedbackLabel);
 			flowPane.getChildren().add(nextButton);
 			flowPane.getChildren().add(cancelButton);
 			flowPane.getChildren().add(finishButton);
@@ -66,15 +78,50 @@ public class Main extends Application {
 
 	        //gridPane = getGridPane();
 	        borderPane = getBorderPane();
-	        tabPane = getTabPane(stage);
+	        getTabPane(stage, 0);
+	        
+	        EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
+
+				@SuppressWarnings("null")
+				public void handle(MouseEvent mouseEvent) {
+					ObservableList<Tab> tabs = tabPane.getTabs();
+					System.out.println("Next step");
+					Tab tab = tabs.get(0);
+					System.out.println("Current tab : "+tab.getText());
+					switch (tab.getText()){
+						case "Step 1/5: Upload File" :
+							getTabPane(stage, 1);
+							
+							break;
+						case "Step 2/5: File Validation" :
+							getTabPane(stage, 2);
+							break;
+						case "Step 3/5: Data Validation" :
+							getTabPane(stage, 3);
+							break;
+						case "Step 4/5: Confirm Upload" :
+							getTabPane(stage, 4);
+							break;
+						case "Step 5/5: Finish Upload" :
+							getTabPane(stage, 5);
+							break;
+							default:
+								break;
+					}
+					borderPane.setCenter(tabPane);
+				}
+			};
+			
+			nextButton.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
 	        
 	        borderPane.setCenter(tabPane);
 	        borderPane.setBottom(flowPane);
 	        
 	        //gridPane.add(tabPane, 0, 8);
-	        Scene scene = new Scene(borderPane, 640, 480);
+	        scene = new Scene(borderPane, 640, 480);
 	     
 	        stage.setScene(scene);
+	        stage.setResizable(false);
 	        stage.show();
 	    }
 		
@@ -89,9 +136,10 @@ public class Main extends Application {
 		        }
 		   }
 		
-		private TabPane getTabPane(Stage stage){
+		private TabPane getTabPane(Stage stage, int step){
 			 //
-	        TabPane tabPane = new TabPane();
+			if(tabPane==null)
+				tabPane = new TabPane();
 	        final Stage localStage = stage;
 	        
 	        tabPane.setStyle("-fx-border-color: blue;");
@@ -101,26 +149,46 @@ public class Main extends Application {
 	        uploadFileTab.setContent(getUploadFileGridPane(localStage));
 	        	        
 	        Tab fileValidationTab = new Tab();
-	        fileValidationTab.setText("Step 2: File Validation");
+	        fileValidationTab.setText("Step 2/5: File Validation");
 	        fileValidationTab.setContent(getFileValidationGridPane());
 	        
 	        Tab dataValidationTab = new Tab();
-	        dataValidationTab.setText("Step 3: Data Validation");
+	        dataValidationTab.setText("Step 3/5: Data Validation");
 	        dataValidationTab.setContent(getDataValidationGridPane());
 	        
 	        Tab confirmUploadTab = new Tab();
-	        confirmUploadTab.setText("Step 4: Confirm Upload");
+	        confirmUploadTab.setText("Step 4/5: Confirm Upload");
 	        confirmUploadTab.setContent(getConfirmUploadGridPane());
 	        
 	        Tab finishUplaodTab = new Tab();
-	        finishUplaodTab.setText("Step 5: Finish Upload");
+	        finishUplaodTab.setText("Step 5/5: Finish Upload");
 	        finishUplaodTab.setContent(getFinishUploadGridPane());
 	        
-	        tabPane.getTabs().add(uploadFileTab);
-	        tabPane.getTabs().add(fileValidationTab);
-	        tabPane.getTabs().add(dataValidationTab);
-	        tabPane.getTabs().add(confirmUploadTab);
-	        tabPane.getTabs().add(finishUplaodTab);
+	        if(tabPane.getTabs().size()>0)
+	        	tabPane.getTabs().remove(0);
+	        
+	        switch (step){
+	        	case 1 : 
+	        		tabPane.getTabs().add(fileValidationTab);
+	        		System.out.println("Current tab : "+fileValidationTab.getText());
+	        		flowPane.getChildren().get(2).setVisible(false);
+	        		flowPane.getChildren().get(0).setVisible(true);
+	        		break;
+	        	case 2 :
+	        		tabPane.getTabs().add(dataValidationTab);
+	        		break;
+	        	case 3 :
+	        		tabPane.getTabs().add(confirmUploadTab);
+	        		break;
+	        	case 4 : 
+	        		tabPane.getTabs().add(finishUplaodTab);
+	        		flowPane.getChildren().get(0).setVisible(false);
+	        		flowPane.getChildren().get(2).setVisible(true);
+	        		break;
+	        	default:
+	        		tabPane.getTabs().add(uploadFileTab);
+	        		break;
+	        }
 	        return tabPane;
 		}		
 		

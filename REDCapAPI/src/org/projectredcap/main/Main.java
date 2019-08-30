@@ -4,7 +4,16 @@ public class Main
 {
 	public static void main(final String[] args)
 	{
-		final Config c = new Config();
+		final Config c = new Config("03F69DF758E684976D55B604ADDF2F31",
+				"https://redcap.core.wits.ac.za/redcap/api/",
+			   "record",
+			    "csv",
+			   "flat",
+			   "raw",
+			   "",
+			   null);
+		String result= null;
+			    
 
 		//final ExportArms exportArms = new ExportArms(c);
 		//exportArms.doPost();
@@ -40,13 +49,13 @@ public class Main
 		//exportSurveyLink.doPost();
 
 		//final ExportReports exportReports = new ExportReports(c);
-		//exportReports.doPost();
+		//result = exportReports.doPost().toString();
 
 		//final ExportREDCapVersion exportREDCapVersion = new ExportREDCapVersion(c);
 		//exportREDCapVersion.doPost();
 
-		//final ExportRecords exportRecords = new ExportRecords(c);
-		//exportRecords.doPost();
+		final ExportRecords exportRecords = new ExportRecords(c);
+		result = exportRecords.doPost().toString();
 
 		//final ExportProject exportProject = new ExportProject(c);
 		//exportProject.doPost();
@@ -65,5 +74,7 @@ public class Main
 
 		//final ExportEvents exportEvents = new ExportEvents(c);
 		//exportEvents.doPost();
+		System.out.println("result: " + result.toString());
 	}
+	
 }
