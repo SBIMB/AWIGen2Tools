@@ -63,7 +63,26 @@ public class Main extends Application {
 			cancelButton.setPrefSize(100.00, 30.00);
 			finishButton.setPrefSize(100.00, 30.00);
 			
+<<<<<<< Upstream, based on origin/master
 			feedbackLabel.setStyle("-fx-border-color: blue;");
+=======
+			EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
+				
+				public void handle(MouseEvent event) {
+					switch (true) {
+					case tabPane.:
+						
+						break;
+
+					default:
+						break;
+					}
+					
+				}
+			};
+			
+			nextButton.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
+>>>>>>> 2625ae9 Minor changes
 			
 			flowPane.getChildren().add(feedbackLabel);
 			flowPane.getChildren().add(nextButton);
@@ -117,6 +136,8 @@ public class Main extends Application {
 	        borderPane.setCenter(tabPane);
 	        borderPane.setBottom(flowPane);
 	        
+	        tabPane.
+	        
 	        //gridPane.add(tabPane, 0, 8);
 	        scene = new Scene(borderPane, 640, 480);
 	     
@@ -136,7 +157,12 @@ public class Main extends Application {
 		        }
 		   }
 		
+<<<<<<< Upstream, based on origin/master
 		private TabPane getTabPane(Stage stage, int step){
+=======
+		private TabPane getTabPane(Stage stage){
+			
+>>>>>>> 2625ae9 Minor changes
 			 //
 			if(tabPane==null)
 				tabPane = new TabPane();
@@ -147,22 +173,26 @@ public class Main extends Application {
 	        Tab uploadFileTab = new Tab();
 	        uploadFileTab.setText("Step 1/5: Upload File");
 	        uploadFileTab.setContent(getUploadFileGridPane(localStage));
-	        	        
+	        	        	        
 	        Tab fileValidationTab = new Tab();
 	        fileValidationTab.setText("Step 2/5: File Validation");
 	        fileValidationTab.setContent(getFileValidationGridPane());
+	        fileValidationTab.setDisable(true);
 	        
 	        Tab dataValidationTab = new Tab();
 	        dataValidationTab.setText("Step 3/5: Data Validation");
 	        dataValidationTab.setContent(getDataValidationGridPane());
+	        dataValidationTab.setDisable(true);
 	        
 	        Tab confirmUploadTab = new Tab();
 	        confirmUploadTab.setText("Step 4/5: Confirm Upload");
 	        confirmUploadTab.setContent(getConfirmUploadGridPane());
+	        confirmUploadTab.setDisable(true);
 	        
 	        Tab finishUplaodTab = new Tab();
 	        finishUplaodTab.setText("Step 5/5: Finish Upload");
 	        finishUplaodTab.setContent(getFinishUploadGridPane());
+	        finishUplaodTab.setDisable(true);
 	        
 	        if(tabPane.getTabs().size()>0)
 	        	tabPane.getTabs().remove(0);
