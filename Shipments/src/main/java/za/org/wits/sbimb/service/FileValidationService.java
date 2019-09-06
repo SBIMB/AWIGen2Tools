@@ -6,14 +6,11 @@ package za.org.wits.sbimb.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import za.org.wits.sbimb.dao.FileHandler;
 import za.org.wits.sbimb.shipment.model.FileFormatNotValidException;
 import za.org.wits.sbimb.shipment.model.FileStructureNotValidException;
 
@@ -35,7 +32,8 @@ public class FileValidationService implements IFileValidationService{
 		
 		if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0){
 			fileExtension = fileName.substring(fileName.lastIndexOf(".")+1);
-	        if(fileExtension=="xlsm"){
+			
+	        if(fileExtension.equalsIgnoreCase("xlsm")){
 	        	isFileFormatCorrect=true;
 	        }else{
 	        	throw new FileFormatNotValidException("File format incorrect. Expect file format is xlsm but the current file is in "+ fileExtension);
@@ -47,17 +45,17 @@ public class FileValidationService implements IFileValidationService{
 	}
 
 	@Override
-	public Boolean isFileStructureCorrect(File file) throws FileStructureNotValidException {
+	public Boolean isFileStructureCorrect(File file) throws FileStructureNotValidException, EncryptedDocumentException, InvalidFormatException, IOException {
 		Boolean isFileStructureCorrect = false;
-		Boolean isSummarySheetMissing=null;
-		Boolean isParticipantsSheetMissing=null;
-		Boolean isBiospecimenSheetMissing=null;
+		Boolean isSummarySheetMissing=false;
+		Boolean isParticipantsSheetMissing=false;
+		Boolean isBiospecimenSheetMissing=false;
 				
 		try {
 			workbook = iscr.getWorkBook(file);
 		} catch (EncryptedDocumentException | InvalidFormatException
 				| IOException e) {
-			e.printStackTrace();
+			throw e;
 		}
 		
 		sheets = iscr.getWorksheets(workbook);
@@ -89,12 +87,7 @@ public class FileValidationService implements IFileValidationService{
 			throw new FileStructureNotValidException("The biospecimen worksheet is missing.");
 		}else{
 			isFileStructureCorrect=true;
-		}
-				
-		
+		}		
 		return isFileStructureCorrect;
 	}
-	
-	
-
 }

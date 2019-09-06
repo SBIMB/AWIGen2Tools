@@ -3,10 +3,20 @@ package za.org.wits.sbimb.shipment.shipment_ui;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import za.org.wits.sbimb.shipment.model.Feedback;
+import za.org.wits.sbimb.shipment.model.ShipmentManifest;
+import za.org.wits.sbimb.shipment.service.FileUploadService;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -16,6 +26,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -31,6 +42,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.converter.LocalDateStringConverter;
 
 /**
  * JavaFX App
@@ -43,27 +55,38 @@ public class Main extends Application {
 	 Scene scene = null;
 	 BorderPane borderPane = null;
 	 FlowPane flowPane = null;
+	 FileUploadService fileUploadService = new FileUploadService();
+	 String filePath = null;
+	 Label feedbackLabel = new Label("test");
+	 Button nextButton = null;
+	 Button cancelButton = null;
+	 Button finishButton = null;
+	 ShipmentManifest shipmentManifest = null;
 	 
 	 final float width = 600;
 	 
 		@Override
 	    public void start(final Stage stage) {
-			
-						
+									
 			flowPane = new FlowPane();
 			flowPane.setAlignment(Pos.CENTER);
 			flowPane.setVgap(10.00);
-			Button nextButton = new Button("Next");
-			Button cancelButton = new Button("Cancel");
-			Button finishButton = new Button("Finish");
-			Label feedbackLabel = new Label("test");
+			nextButton = new Button("Next");
+			cancelButton = new Button("Cancel");
+			finishButton = new Button("Finish");
+			
 								
 			feedbackLabel.setPrefSize(width, 50.00);
 			nextButton.setPrefSize(100.00, 30.00);
 			cancelButton.setPrefSize(100.00, 30.00);
 			finishButton.setPrefSize(100.00, 30.00);
 			
+			nextButton.setDisable(true);
+			cancelButton.setDisable(true);
+			finishButton.setDisable(true);
+			
 			feedbackLabel.setStyle("-fx-border-color: blue;");
+			feedbackLabel.setWrapText(true);
 			
 			flowPane.getChildren().add(feedbackLabel);
 			flowPane.getChildren().add(nextButton);
@@ -87,11 +110,20 @@ public class Main extends Application {
 					ObservableList<Tab> tabs = tabPane.getTabs();
 					System.out.println("Next step");
 					Tab tab = tabs.get(0);
-					System.out.println("Current tab : "+tab.getText());
+					System.out.println("Current tab 1 : "+tab.getText());
+					Feedback feedback = null;
 					switch (tab.getText()){
 						case "Step 1/5: Upload File" :
-							getTabPane(stage, 1);
-							
+							feedback = fileUploadService.postStepOne(filePath);
+							if(feedback.getIsError()==false){
+								fileUploadService.preStepTwo();
+								getTabPane(stage, 1);
+								System.out.println("Getting Tab 2: ");
+								feedbackLabel.setText(feedback.getNote());
+							}else{
+								//getTabPane(stage, 2);								
+								feedbackLabel.setText(feedback.getNote());
+							}							
 							break;
 						case "Step 2/5: File Validation" :
 							getTabPane(stage, 2);
@@ -144,48 +176,46 @@ public class Main extends Application {
 	        
 	        tabPane.setStyle("-fx-border-color: blue;");
 	        	           
-	        Tab uploadFileTab = new Tab();
-	        uploadFileTab.setText("Step 1/5: Upload File");
-	        uploadFileTab.setContent(getUploadFileGridPane(localStage));
-	        	        
+	       
+	        Tab uploadFileTab = new Tab();	        
 	        Tab fileValidationTab = new Tab();
-	        fileValidationTab.setText("Step 2/5: File Validation");
-	        fileValidationTab.setContent(getFileValidationGridPane());
-	        
 	        Tab dataValidationTab = new Tab();
-	        dataValidationTab.setText("Step 3/5: Data Validation");
-	        dataValidationTab.setContent(getDataValidationGridPane());
-	        
 	        Tab confirmUploadTab = new Tab();
-	        confirmUploadTab.setText("Step 4/5: Confirm Upload");
-	        confirmUploadTab.setContent(getConfirmUploadGridPane());
-	        
 	        Tab finishUplaodTab = new Tab();
-	        finishUplaodTab.setText("Step 5/5: Finish Upload");
-	        finishUplaodTab.setContent(getFinishUploadGridPane());
-	        
+	        	        
 	        if(tabPane.getTabs().size()>0)
 	        	tabPane.getTabs().remove(0);
 	        
 	        switch (step){
-	        	case 1 : 
+	        	case 1 : 	        		
+	        		fileValidationTab.setText("Step 2/5: File Validation");
+	    	        fileValidationTab.setContent(getFileValidationGridPane());
 	        		tabPane.getTabs().add(fileValidationTab);
-	        		System.out.println("Current tab : "+fileValidationTab.getText());
+	        		System.out.println("Current tab 2 : "+fileValidationTab.getText());	        		
 	        		flowPane.getChildren().get(2).setVisible(false);
 	        		flowPane.getChildren().get(0).setVisible(true);
 	        		break;
-	        	case 2 :
+	        	case 2 :	        		
+	        		dataValidationTab.setText("Step 3/5: Data Validation");
+	    	        dataValidationTab.setContent(getDataValidationGridPane());
+	    	        System.out.println("Inserting Current tab : "+fileValidationTab.getText());
 	        		tabPane.getTabs().add(dataValidationTab);
 	        		break;
 	        	case 3 :
+	        		confirmUploadTab.setText("Step 4/5: Confirm Upload");
+	        		confirmUploadTab.setContent(getConfirmUploadGridPane());
 	        		tabPane.getTabs().add(confirmUploadTab);
 	        		break;
 	        	case 4 : 
+	        		finishUplaodTab.setText("Step 5/5: Finish Upload");
+	    	        finishUplaodTab.setContent(getFinishUploadGridPane());
 	        		tabPane.getTabs().add(finishUplaodTab);
 	        		flowPane.getChildren().get(0).setVisible(false);
 	        		flowPane.getChildren().get(2).setVisible(true);
 	        		break;
 	        	default:
+	        		uploadFileTab.setText("Step 1/5: Upload File");
+	        		uploadFileTab.setContent(getUploadFileGridPane(localStage));
 	        		tabPane.getTabs().add(uploadFileTab);
 	        		break;
 	        }
@@ -239,12 +269,29 @@ public class Main extends Application {
 		        				File file = fileChooser.showOpenDialog(localStage);
 		        				if (file != null) {
 		        					//openFile(file);
-		        					shipmentManifestFilePathBrowseLbl.setText(file.getAbsolutePath());
+		        					filePath = file.getAbsolutePath();
+		        					shipmentManifestFilePathBrowseLbl.setText(filePath);
 		        				}else{
 		        					shipmentManifestFilePathBrowseLbl.setText("No File Choosen");
 		        				}
 		        			}
 		        		});
+	        shipmentManifestFilePathBrowseLbl.textProperty().addListener(new ChangeListener<String>() {
+
+				@Override
+				public void changed(ObservableValue<? extends String> arg0, String oldValue,
+						String newValue) {
+					if(newValue.isEmpty() || newValue.equalsIgnoreCase("No File Choosen")){
+						nextButton.setDisable(true);
+						cancelButton.setDisable(true);
+						finishButton.setDisable(true);
+					}else{
+						nextButton.setDisable(false);
+					}
+					
+				}
+	        	
+			});
 	        gridPane.add(shipmentManifestBrowseBtn, 2, 4);
 	        
 	        //Textbox 	        
@@ -281,6 +328,50 @@ public class Main extends Application {
 		
 		private GridPane getFileValidationGridPane(){
 			GridPane gridPane = new GridPane();
+			FlowPane flowPane = new FlowPane();
+			
+			if(shipmentManifest!= null){
+				//String manifestNumber;
+				Label manifestNumberlbl = new Label("Manifest Number");
+				Text manifestNumberTxt = new Text(shipmentManifest.getManifestNumber());
+				
+				gridPane.add(manifestNumberlbl,0,0);
+				gridPane.add(manifestNumberTxt,1,0);
+				
+				//String collectionCentre;
+				Label collectionCentrelbl = new Label("Collection Centre");
+				Text collectionCentreTxt = new Text(shipmentManifest.getCollectionCentre());
+				
+				//String refNumber;
+				Label refNumberlbl = new Label("Reference Number");
+				Text refNumberTxt = new Text(shipmentManifest.getRefNumber());
+				
+				//Date dateSent;
+				Label dateSentlbl = new Label("Date Sent");
+				ZoneId defaultZoneId = ZoneId.systemDefault();
+				Instant instant = shipmentManifest.getDateSent().toInstant();
+				LocalDate localDate = instant.atZone(defaultZoneId).toLocalDate();
+				DatePicker dateSentDP = new DatePicker(localDate);
+							
+				//Integer numberOfBoxes;
+				Label numberOfBoxeslbl = new Label("Number Of Boxes");
+				Text numberOfBoxesTxt = new Text(shipmentManifest.getNumberOfBoxes().toString());
+				
+				//String responsiblePerson;
+				Label responsiblePersonlbl = new Label("Responsible Person");
+				Text responsiblePersonTxt = new Text(shipmentManifest.getResponsiblePerson());
+				
+				//String contactDetails;
+				Label contactDetailslbl = new Label("Contact Details");
+				Text contactDetailsTxt = new Text(shipmentManifest.getContactDetails());
+				
+				//String methodOfShipment;
+				Label methodOfShipmentlbl = new Label("Method Of Shipment");
+				Text methodOfShipmentTxt = new Text(shipmentManifest.getMethodOfShipment());
+				
+				gridPane.add(manifestNumberlbl,0,0);
+			
+			}
 			return gridPane;
 		}
 		
@@ -322,5 +413,4 @@ public class Main extends Application {
 	    public static void main(String[] args) {
 	        launch();
 	    }
-
 }
