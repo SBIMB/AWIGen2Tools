@@ -4,6 +4,7 @@
 package za.org.wits.sbimb.shipment.model;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Freedom Mukomana
@@ -18,7 +19,9 @@ public class ShipmentManifest {
 	String responsiblePerson;
 	String contactDetails;
 	String methodOfShipment;
-		
+	List<Participant> participants;
+	List<Plate> plates;
+	List<Biospecimen> biospecimens;	
 	/**
 	 * @return the manifestNumber
 	 */
@@ -115,7 +118,40 @@ public class ShipmentManifest {
 	public void setMethodOfShipment(String methodOfShipment) {
 		this.methodOfShipment = methodOfShipment;
 	}
-
-	
-
+	/**
+	 * @return the participants
+	 */
+	public List<Participant> getParticipants() {
+		return participants;
+	}
+	/**
+	 * @param participants the participants to set
+	 */
+	public void setParticipants(List<Participant> participants) {
+		this.participants = participants;
+	}
+	/**
+	 * @return the plates
+	 */
+	public List<Plate> getPlates() {
+		return plates;
+	}
+	/**
+	 * @param plates the plates to set
+	 */
+	public void setPlates(List<Plate> plates) {
+		this.plates = plates;
+	}
+	/**
+	 * @return the biospecimens
+	 */
+	public List<Biospecimen> getBiospecimens() {
+		return biospecimens;
+	}
+	/**
+	 * @param biospecimens the biospecimens to set
+	 */
+	public void setBiospecimens(List<Biospecimen> biospecimens) {
+		this.biospecimens = biospecimens;
+	}
 }

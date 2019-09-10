@@ -15,7 +15,11 @@ import java.util.Map.Entry;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -69,46 +73,184 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
         }
 		return rows;
 	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see za.org.wits.sbimb.service.ISpreadsheetContentReader#getCells(org.apache.poi.ss.usermodel.Workbook, org.apache.poi.ss.usermodel.Row)
+	 */
+	@Override
+	public HashMap<String, String> getCells(Workbook workbook, Row row) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+		
+	/* (non-Javadoc)
+	 * @see za.org.wits.sbimb.service.ISpreadsheetContentReader#getCells(org.apache.poi.ss.usermodel.Workbook, java.util.List, org.apache.poi.ss.usermodel.Row)
+	 */
+	@Override
+	public HashMap<String, String> getCells(Workbook workbook,
+			List<String> cellAddresses, List<String> cellHeaders, Row row) {
+		
+		DataFormatter dataFormatter = new DataFormatter();
+		String cellValue = null; 
+		HashMap<String, String> cells = new HashMap<String, String>();
+
+		// Now let's iterate over the columns of the current row
+        Iterator<Cell> cellIterator = row.cellIterator();
+        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();        
+        int index = 0;
+        
+        while (cellIterator.hasNext()) {
+        	Cell cell = cellIterator.next();
+            //System.out.println(cell.getSheet().getSheetName()+" "+cell.getAddress());
+            
+            if(cellAddresses.contains(cell.getAddress().formatAsString().toUpperCase())){
+            	cellAddresses.indexOf(cell.getAddress().formatAsString().toUpperCase());
+            	if(cell!=null || cell.getCellTypeEnum()!=CellType.BLANK || cell.getCellTypeEnum()!=CellType.STRING || cell.getStringCellValue()!="" ){
+            		CellValue cv = evaluator.evaluate(cell);
+	                CellType cellType=null;
+	                
+	                if(cv!=null)
+	                	cellType = cv.getCellTypeEnum();	                             
+	                	
+	                   	if(cellType!=null){
+	                   		switch (cellType) {
+				               	case STRING:
+				               		cellValue = cell.getStringCellValue();
+				               		break;
+				
+			                	case FORMULA:
+			                		cellValue = cell.getCellFormula();
+			                		break;
+				
+			                	case NUMERIC:
+				                	if (DateUtil.isCellDateFormatted(cell)) {
+				                        cellValue = cell.getDateCellValue().toString();
+				                    } else {
+				                        cellValue = Double.toString(cell.getNumericCellValue());
+				                    }
+				                    break;
+				
+			                	case BLANK:
+				                    cellValue = "";
+				                    break;
+				
+				                case BOOLEAN:
+				                    cellValue = Boolean.toString(cell.getBooleanCellValue());
+				                    break;
+					                    
+				                default:
+				                	cellValue ="";
+				                	break;
+				               }
+	                   		}
+	                	}else{
+	                		cellValue="";
+	                	}   
+	                	//String cellValue = dataFormatter.formatCellValue(cell);
+	                	
+	                cells.put(cellHeaders.get(index), cellValue);
+	                }
+	            }
+           
+		return cells;
+	}
 
 	/* (non-Javadoc)
 	 * @see za.org.wits.sbimb.service.ISpreadsheetContentReader#getCells(org.apache.poi.ss.usermodel.Row)
 	 */
-	public HashMap<CellAddress, String> getCells(Row row) {
+	public HashMap<String, String> getCells(Workbook workbook, HashMap<CellAddress, String> cellHeaders, Row row) {
 		
-		 DataFormatter dataFormatter = new DataFormatter();
-		
-		HashMap<CellAddress, String> cells = new HashMap<CellAddress, String>();
+		DataFormatter dataFormatter = new DataFormatter();
+		String cellValue = null; 
+		HashMap<String, String> cells = new HashMap<String, String>();
 
 		 // Now let's iterate over the columns of the current row
             Iterator<Cell> cellIterator = row.cellIterator();
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+            
+        
 
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
-                String cellValue = dataFormatter.formatCellValue(cell);
-                cells.put(cell.getAddress(), cellValue);
+                //System.out.println(cell.getSheet().getSheetName()+" "+cell.getAddress());
+                if(cell!=null || cell.getCellTypeEnum()!=CellType.BLANK || cell.getCellTypeEnum()!=CellType.STRING || cell.getStringCellValue()!="" ){
+                	CellValue cv = evaluator.evaluate(cell);
+                	CellType cellType=null;
+                	if(cv!=null)
+                		cellType = cv.getCellTypeEnum();
+                //Character column = cell.getAddress().toString().charAt(0);
+                
+                for(Map.Entry<CellAddress, String> cellHeader : cellHeaders.entrySet()){
+                	//System.out.println(cellHeader.getKey().getColumn()+" "+cell.getColumnIndex());
+                	if(cellHeader.getKey().getColumn()==cell.getColumnIndex()){
+                   		if(cellType!=null){
+                   			switch (cellType) {
+			                	case STRING:
+			                		cellValue = cell.getStringCellValue();
+			                		break;
+			
+			                	case FORMULA:
+			                		cellValue = cell.getCellFormula();
+			                		break;
+			
+			                	case NUMERIC:
+				                	if (DateUtil.isCellDateFormatted(cell)) {
+				                        cellValue = cell.getDateCellValue().toString();
+				                    } else {
+				                        cellValue = Double.toString(cell.getNumericCellValue());
+				                    }
+				                    break;
+			
+			                	case BLANK:
+				                    cellValue = "";
+				                    break;
+			
+				                case BOOLEAN:
+				                    cellValue = Boolean.toString(cell.getBooleanCellValue());
+				                    break;
+				                    
+				                default:
+				                	cellValue ="";
+				                	break;
+			                }
+                   		}
+                   		//System.out.println(cellHeader.getValue()+" "+ cellValue);
+                	}else{
+                		cellValue="";
+                	}   
+                	//String cellValue = dataFormatter.formatCellValue(cell);
+                	
+                cells.put(cellHeader.getValue(), cellValue);
+                }
+                }
             }
 		return cells;
-	}
+	}	
 
 	@Override
-	public List<String> getWorksheetHeader(Row row) {
+	public HashMap<CellAddress, String> getWorksheetHeader(Row row) {
 		
 		DataFormatter dataFormatter = new DataFormatter();
-		List<String> worksheetHeader = new ArrayList<String>();
+		HashMap<CellAddress, String> worksheetHeader = new HashMap<CellAddress, String>();
 		
 		// Now let's iterate over the columns of the current row
         Iterator<Cell> cellIterator = row.cellIterator();
         
 		while (cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
-            String cellValue = dataFormatter.formatCellValue(cell);
-            worksheetHeader.add(cellValue);
+            if(cell.getCellTypeEnum()!=CellType.BLANK){
+            	String cellValue = dataFormatter.formatCellValue(cell);
+            	worksheetHeader.put(cell.getAddress(), cellValue);
+            	//System.out.println(cell.getAddress()+" "+ cellValue);
+            }
         }
 		return worksheetHeader;
 	}
 
 	@Override
-	public HashMap<String, String> mapValuesToHeader(List<String> header,
+	public HashMap<String, String> mapValuesToHeader(HashMap<CellAddress, String> header,
 			HashMap<CellAddress, String> row) {
 		HashMap<String, String> record = new HashMap<String, String>();
 		int i = 0;
@@ -118,6 +260,7 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
         
         while (cellIterator.hasNext()) {
             Map.Entry<CellAddress, String> cell = cellIterator.next();
+            //System.out.println(header.get(i)+ " "+ cell.getValue().toString());
             record.put(header.get(i), cell.getValue().toString());
             i++;
         }
