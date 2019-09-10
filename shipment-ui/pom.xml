@@ -31,7 +31,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.1</version>
                 <configuration>
-                    <mainClass>za.org.wits.sbimb.shipment.shipment_ui.App</mainClass>
+                    <mainClass>za.org.wits.sbimb.shipment.shipment_ui.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>
