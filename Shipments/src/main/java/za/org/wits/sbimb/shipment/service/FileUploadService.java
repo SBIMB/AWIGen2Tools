@@ -5,6 +5,7 @@ package za.org.wits.sbimb.shipment.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -14,10 +15,12 @@ import za.org.wits.sbimb.dao.FileHandler;
 import za.org.wits.sbimb.service.FileValidationService;
 import za.org.wits.sbimb.service.ImportFromSpreadsheet;
 import za.org.wits.sbimb.service.SpreadsheetContentReader;
+import za.org.wits.sbimb.shipment.model.DataError;
 import za.org.wits.sbimb.shipment.model.Feedback;
 import za.org.wits.sbimb.shipment.model.FileFormatNotValidException;
 import za.org.wits.sbimb.shipment.model.FileStructureNotValidException;
 import za.org.wits.sbimb.shipment.model.ShipmentManifest;
+import za.org.wits.sbimb.shipment.service.IDataValidationService;
 
 /**
  * @author Freedom Mukomana
@@ -28,8 +31,10 @@ public class FileUploadService implements IFileUploadService {
 	FileHandler fileHandler = new FileHandler();
 	ImportFromSpreadsheet ims = new ImportFromSpreadsheet();
 	SpreadsheetContentReader scr = new SpreadsheetContentReader();
+	IDataValidationService dataValidationService = new DataValidationService();
 	File file;
 	Workbook workbook;
+	ShipmentManifest shipmentManifest;
 	
 	
 	/* (non-Javadoc)
@@ -54,8 +59,6 @@ public class FileUploadService implements IFileUploadService {
 		try {
 			fileValidationService.isFileFormatCorrect(file);
 		} catch (FileFormatNotValidException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 			feedback.setIsError(true);
 			feedback.setNote(e.getMessage());
 			return feedback;
@@ -65,8 +68,6 @@ public class FileUploadService implements IFileUploadService {
 		try {
 			fileValidationService.isFileStructureCorrect(file);			
 		} catch (FileStructureNotValidException | EncryptedDocumentException | InvalidFormatException | IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 			feedback.setIsError(true);
 			feedback.setNote(e.getMessage());
 			return feedback;
@@ -93,8 +94,8 @@ public class FileUploadService implements IFileUploadService {
 	 */
 	@Override
 	public ShipmentManifest preStepTwo() {
-		ShipmentManifest shipmentManifest = ims.convert(workbook);
-		
+		shipmentManifest = ims.convert(workbook);
+
 		return shipmentManifest;
 	}
 
@@ -103,8 +104,22 @@ public class FileUploadService implements IFileUploadService {
 	 */
 	@Override
 	public Feedback postStepTwo() {
-		// TODO Auto-generated method stub
-		return null;
+		Feedback feedback = null;
+		List<DataError> shipmentManifestDataErrors = dataValidationService.checkManifestErrors(shipmentManifest);
+		
+		if(shipmentManifestDataErrors.size()==0){
+			feedback = new Feedback(false);
+		}else{
+			StringBuilder sb = new StringBuilder();
+			shipmentManifestDataErrors.forEach(dataError->{
+				sb.append(dataError.getMessage());
+				sb.append("\n");
+			});
+			feedback = new Feedback(true, sb.toString());
+			System.out.println(sb.toString());
+		}
+		
+		return feedback;
 	}
 
 	/* (non-Javadoc)

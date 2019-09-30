@@ -15,7 +15,7 @@ public class Participant {
 	String studyID; //Study ID
 	String status; //Status
 	Date enrollmentDate; //Enrollment Date
-	int age; //Age
+	Integer age; //Age
 	String otherID; //Other ID
 	String ethnicity; //Ethnicity
 	String gender; //Gender
@@ -66,13 +66,13 @@ public class Participant {
 	/**
 	 * @return the age
 	 */
-	public int getAge() {
+	public Integer getAge() {
 		return age;
 	}
 	/**
 	 * @param age the age to set
 	 */
-	public void setAge(int age) {
+	public void setAge(Integer age) {
 		this.age = age;
 	}
 	/**

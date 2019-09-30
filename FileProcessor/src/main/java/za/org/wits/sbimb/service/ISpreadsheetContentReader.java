@@ -23,9 +23,11 @@ public interface ISpreadsheetContentReader {
 	public Workbook getWorkBook(File file) throws EncryptedDocumentException, InvalidFormatException, IOException;
 	public HashMap<String, Sheet> getWorksheets(Workbook workbook);
 	public List<Row> getRows(Sheet sheet);
+	public List<List<String>> getRowsAsString(Sheet sheet);
 	public HashMap<String, String> getCells(Workbook workbook, Row row);
 	public HashMap<String, String> getCells(Workbook workbook,List<String> cellAddresses, List<String> cellHeaders, Row row);
 	public HashMap<String, String> getCells(Workbook workbook, HashMap<CellAddress, String> cellHeaders, Row row);
 	public HashMap<CellAddress, String> getWorksheetHeader(Row row);
+	public List<String> getRowAsList(Row row);
 	public HashMap<String, String> mapValuesToHeader(HashMap<CellAddress, String> header, HashMap<CellAddress, String> row);
 }

@@ -74,14 +74,24 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
 		return rows;
 	}
 	
-	
+	/* (non-Javadoc)
+	 * @see za.org.wits.sbimb.service.ISpreadsheetContentReader#getRowsAsString(org.apache.poi.ss.usermodel.Sheet)
+	 */
+	@Override
+	public List<List<String>> getRowsAsString(Sheet sheet) {
+		List<Row> rows = getRows(sheet);
+		List<List<String>> rowList = new ArrayList<List<String>>();
+			rows.forEach(row->{
+				rowList.add(getRowAsList(row));
+			});
+		return rowList;
+	}
 
 	/* (non-Javadoc)
 	 * @see za.org.wits.sbimb.service.ISpreadsheetContentReader#getCells(org.apache.poi.ss.usermodel.Workbook, org.apache.poi.ss.usermodel.Row)
 	 */
 	@Override
-	public HashMap<String, String> getCells(Workbook workbook, Row row) {
-		// TODO Auto-generated method stub
+	public HashMap<String, String> getCells(Workbook workbook, Row row) {		
 		return null;
 	}
 		
@@ -92,22 +102,17 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
 	public HashMap<String, String> getCells(Workbook workbook,
 			List<String> cellAddresses, List<String> cellHeaders, Row row) {
 		
-		DataFormatter dataFormatter = new DataFormatter();
 		String cellValue = null; 
 		HashMap<String, String> cells = new HashMap<String, String>();
 
 		// Now let's iterate over the columns of the current row
         Iterator<Cell> cellIterator = row.cellIterator();
         FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();        
-        int index = 0;
-        
         while (cellIterator.hasNext()) {
         	Cell cell = cellIterator.next();
-            //System.out.println(cell.getSheet().getSheetName()+" "+cell.getAddress());
             
             if(cellAddresses.contains(cell.getAddress().formatAsString().toUpperCase())){
-            	cellAddresses.indexOf(cell.getAddress().formatAsString().toUpperCase());
-            	if(cell!=null || cell.getCellTypeEnum()!=CellType.BLANK || cell.getCellTypeEnum()!=CellType.STRING || cell.getStringCellValue()!="" ){
+            	if(cell.equals(null) || cell.getColumnIndex()!=0 || cell.getCellTypeEnum()!=CellType.BLANK || cell.getCellTypeEnum()!=CellType.STRING || cell.getStringCellValue()!="" ){
             		CellValue cv = evaluator.evaluate(cell);
 	                CellType cellType=null;
 	                
@@ -148,9 +153,8 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
 	                	}else{
 	                		cellValue="";
 	                	}   
-	                	//String cellValue = dataFormatter.formatCellValue(cell);
 	                	
-	                cells.put(cellHeaders.get(index), cellValue);
+	                	cells.put(cell.getAddress().formatAsString(), cellValue);
 	                }
 	            }
            
@@ -162,29 +166,28 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
 	 */
 	public HashMap<String, String> getCells(Workbook workbook, HashMap<CellAddress, String> cellHeaders, Row row) {
 		
-		DataFormatter dataFormatter = new DataFormatter();
 		String cellValue = null; 
 		HashMap<String, String> cells = new HashMap<String, String>();
 
 		 // Now let's iterate over the columns of the current row
             Iterator<Cell> cellIterator = row.cellIterator();
-            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-            
-        
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();        
 
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
-                //System.out.println(cell.getSheet().getSheetName()+" "+cell.getAddress());
-                if(cell!=null || cell.getCellTypeEnum()!=CellType.BLANK || cell.getCellTypeEnum()!=CellType.STRING || cell.getStringCellValue()!="" ){
-                	CellValue cv = evaluator.evaluate(cell);
-                	CellType cellType=null;
-                	if(cv!=null)
-                		cellType = cv.getCellTypeEnum();
-                //Character column = cell.getAddress().toString().charAt(0);
-                
-                for(Map.Entry<CellAddress, String> cellHeader : cellHeaders.entrySet()){
-                	//System.out.println(cellHeader.getKey().getColumn()+" "+cell.getColumnIndex());
-                	if(cellHeader.getKey().getColumn()==cell.getColumnIndex()){
+                CellType cellType=null;
+                if(cell!=null){
+                	if(cell.getCellTypeEnum().equals(CellType.FORMULA)){
+                		CellValue cv = evaluator.evaluate(cell);                	
+	                	if(cv!=null){
+	                		cellType = cv.getCellTypeEnum();
+	                	}
+	                }else{
+	                	cellType = cell.getCellTypeEnum();
+                	}
+                                           
+                for(Map.Entry<CellAddress, String> cellHeader : cellHeaders.entrySet()){               	
+                	if(cellHeader.getKey().getColumn()==cell.getColumnIndex()){                		
                    		if(cellType!=null){
                    			switch (cellType) {
 			                	case STRING:
@@ -212,19 +215,18 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
 				                    break;
 				                    
 				                default:
-				                	cellValue ="";
+				                	//cellValue ="";
 				                	break;
 			                }
                    		}
-                   		//System.out.println(cellHeader.getValue()+" "+ cellValue);
                 	}else{
                 		cellValue="";
                 	}   
-                	//String cellValue = dataFormatter.formatCellValue(cell);
                 	
-                cells.put(cellHeader.getValue(), cellValue);
+                	cells.put(cell.getAddress().formatAsString(), cellValue);
                 }
                 }
+                
             }
 		return cells;
 	}	
@@ -243,11 +245,70 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
             if(cell.getCellTypeEnum()!=CellType.BLANK){
             	String cellValue = dataFormatter.formatCellValue(cell);
             	worksheetHeader.put(cell.getAddress(), cellValue);
-            	//System.out.println(cell.getAddress()+" "+ cellValue);
             }
         }
 		return worksheetHeader;
 	}
+	
+	/* (non-Javadoc)
+	 * @see za.org.wits.sbimb.service.ISpreadsheetContentReader#getWorksheetHeaderList(org.apache.poi.ss.usermodel.Row)
+	 */
+	@Override
+	public List<String> getRowAsList(Row row) {
+		FormulaEvaluator evaluator = row.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();  
+		Iterator<Cell> cells = row.cellIterator();
+		List<String> rowStrList = new ArrayList<String>();
+		CellValue cv = null;
+		CellType cellType=null;
+		
+		while(cells.hasNext()){
+			Cell cell = cells.next();
+			String cellValue = null;
+			if(cell.getCellTypeEnum().equals(CellType.FORMULA)){
+				cv = evaluator.evaluate(cell);  
+	        	if(cv!=null){
+	        		cellType = cv.getCellTypeEnum();
+	        	}
+	        }else{
+	        	cellType = cell.getCellTypeEnum();
+	    	}
+			
+			if(cellType!=null){
+       			switch (cellType) {
+                	case STRING:
+                		cellValue = cell.getStringCellValue();
+                		break;
+
+                	case FORMULA:
+                		cellValue = cell.getCellFormula();
+                		break;
+
+                	case NUMERIC:
+	                	if (DateUtil.isCellDateFormatted(cell)) {
+	                        cellValue = cell.getDateCellValue().toString();
+	                    } else {
+	                        cellValue = Double.toString(cell.getNumericCellValue());
+	                    }
+	                    break;
+
+                	case BLANK:
+	                    cellValue = "";
+	                    break;
+
+	                case BOOLEAN:
+	                    cellValue = Boolean.toString(cell.getBooleanCellValue());
+	                    break;
+	                    
+	                default:
+	                	
+	                	break;
+                }
+       		}
+    	
+			rowStrList.add(cellValue);
+		}
+		return rowStrList;
+	}	
 
 	@Override
 	public HashMap<String, String> mapValuesToHeader(HashMap<CellAddress, String> header,
@@ -260,13 +321,9 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
         
         while (cellIterator.hasNext()) {
             Map.Entry<CellAddress, String> cell = cellIterator.next();
-            //System.out.println(header.get(i)+ " "+ cell.getValue().toString());
             record.put(header.get(i), cell.getValue().toString());
             i++;
-        }
-		
-        
+        }        
         return record;
 	}
-
 }

@@ -16,9 +16,9 @@ public class Biospecimen {
 	Date collectionDate;
 	String biospecimenType;
 	Plate plate;
-	Integer row;
-	Integer col;
-	Boolean isManualChecked;
+	String row;
+	String col;
+	Boolean manualChecked;
 	/**
 	 * @return the biospecimenID
 	 */
@@ -94,37 +94,37 @@ public class Biospecimen {
 	/**
 	 * @return the row
 	 */
-	public Integer getRow() {
+	public String getRow() {
 		return row;
 	}
 	/**
 	 * @param row the row to set
 	 */
-	public void setRow(Integer row) {
+	public void setRow(String row) {
 		this.row = row;
 	}
 	/**
 	 * @return the col
 	 */
-	public Integer getCol() {
+	public String getCol() {
 		return col;
 	}
 	/**
 	 * @param col the col to set
 	 */
-	public void setCol(Integer col) {
+	public void setCol(String col) {
 		this.col = col;
 	}
 	/**
 	 * @return the isMamualChecked
 	 */
-	public Boolean getIsManualChecked() {
-		return isManualChecked;
+	public Boolean isManualChecked() {
+		return manualChecked;
 	}
 	/**
 	 * @param isMamualChecked the isMamualChecked to set
 	 */
-	public void setIsManualChecked(Boolean isMamualChecked) {
-		this.isManualChecked = isMamualChecked;
+	public void setManualChecked(Boolean mamualChecked) {
+		this.manualChecked = mamualChecked;
 	}	
 }
