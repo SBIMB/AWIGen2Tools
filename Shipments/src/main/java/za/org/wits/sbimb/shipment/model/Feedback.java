@@ -8,33 +8,33 @@ package za.org.wits.sbimb.shipment.model;
  *
  */
 public class Feedback {
-	Boolean isError;
+	Boolean error;
 	String note;
 		
 	/**
 	 * @param isError
 	 */
-	public Feedback(Boolean isError) {
+	public Feedback(Boolean error) {
 		super();
-		this.isError = isError;
+		this.error = error;
 	}
 	
 	/**
 	 * @param isError
 	 * @param note
 	 */
-	public Feedback(Boolean isError, String note) {
+	public Feedback(Boolean error, String note) {
 		super();
-		this.isError = isError;
+		this.error = error;
 		this.note = note;
 	}
 
-	public Boolean getIsError() {
-		return isError;
+	public Boolean getError() {
+		return error;
 	}
 	
-	public void setIsError(Boolean isError) {
-		this.isError = isError;
+	public void isError(Boolean error) {
+		this.error = error;
 	}
 	
 	public String getNote() {

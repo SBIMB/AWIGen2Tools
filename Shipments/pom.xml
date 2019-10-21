@@ -18,5 +18,19 @@
 		    <artifactId>file-processor</artifactId>
 		    <version>0.0.1</version>
 		</dependency>
+		
+		<dependency>
+      		<groupId>com.googlecode.json-simple</groupId>
+      		<artifactId>json-simple</artifactId>
+      		<version>1.1.1</version>
+      		<scope>compile</scope>
+    	</dependency>
+    	
+    	<!-- REDCap API -->
+    	<dependency>
+    		<groupId>org.projectredcap.main</groupId>
+  			<artifactId>REDCapAPI</artifactId>
+  			<version>1.0.0</version>
+    	</dependency>
   </dependencies>
 </project>

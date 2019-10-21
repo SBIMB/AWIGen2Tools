@@ -9,7 +9,7 @@ import java.util.List;
 
 import za.org.wits.sbimb.shipment.Constants.BiospecimenTypes;
 import za.org.wits.sbimb.shipment.Constants.CollectionCentres;
-import za.org.wits.sbimb.shipment.Constants.ConsentAnswers;
+import za.org.wits.sbimb.shipment.Constants.YesNoAnswers;
 import za.org.wits.sbimb.shipment.Constants.DataErrorType;
 import za.org.wits.sbimb.shipment.Constants.Ethnicity;
 import za.org.wits.sbimb.shipment.Constants.Gender;
@@ -84,7 +84,7 @@ public class DataValidationService implements IDataValidationService {
 			dataError.setDataErrorType(DataErrorType.MISSING);
 			dataError.setMessage("Date sent is missing");
 			dataErrors.add(dataError);
-		}else if(shipmentManifest.getDateSent().before(new Date())){
+		}else if(shipmentManifest.getDateSent().after(new Date())){
 			DataError dataError = new DataError();
 			
 			dataError.setDataErrorType(DataErrorType.MISSING);
@@ -96,7 +96,7 @@ public class DataValidationService implements IDataValidationService {
 			DataError dataError = new DataError();
 			
 			dataError.setDataErrorType(DataErrorType.MISSING);
-			dataError.setMessage("Name of the responsible person is missing");
+			dataError.setMessage("Contact details of responsible person is missing");
 			dataErrors.add(dataError);
 		}
 		
@@ -104,7 +104,7 @@ public class DataValidationService implements IDataValidationService {
 			DataError dataError = new DataError();
 			
 			dataError.setDataErrorType(DataErrorType.MISSING);
-			dataError.setMessage("Name of the responsible person is missing");
+			dataError.setMessage("The number of boxes is missing");
 			dataErrors.add(dataError);
 		}else if(shipmentManifest.getNumberOfBoxes()<1){
 			DataError dataError = new DataError();
@@ -162,9 +162,9 @@ public class DataValidationService implements IDataValidationService {
 			DataError participantDataError = new DataError();
 			
 			participantDataError.setDataErrorType(DataErrorType.MISSING);
-			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Name of the responsible person is missing");
+			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Enrollment date is missing");
 			participantDataErrors.add(participantDataError);
-		}else if(participant.getEnrollmentDate().before(new Date())){
+		}else if(participant.getEnrollmentDate().after(new Date())){
 			DataError participantDataError = new DataError();
 			
 			participantDataError.setDataErrorType(DataErrorType.MISSING);
@@ -192,7 +192,7 @@ public class DataValidationService implements IDataValidationService {
 			participantDataError.setDataErrorType(DataErrorType.MISSING);
 			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Ethnicty is missing");
 			participantDataErrors.add(participantDataError);
-		}else if(!Ethnicity.contains(participant.getStatus())){
+		}else if(!Ethnicity.contains(participant.getEthnicity())){
 			DataError participantDataError = new DataError();
 			
 			participantDataError.setDataErrorType(DataErrorType.INCORRECT);
@@ -220,7 +220,7 @@ public class DataValidationService implements IDataValidationService {
 			participantDataError.setDataErrorType(DataErrorType.MISSING);
 			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Consent date is missing");
 			participantDataErrors.add(participantDataError);
-		}else if(participant.getEnrollmentDate().before(new Date())){
+		}else if(participant.getEnrollmentDate().after(new Date())){
 			DataError participantDataError = new DataError();
 			
 			participantDataError.setDataErrorType(DataErrorType.MISSING);
@@ -234,7 +234,7 @@ public class DataValidationService implements IDataValidationService {
 			participantDataError.setDataErrorType(DataErrorType.MISSING);
 			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Data use is missing");
 			participantDataErrors.add(participantDataError);
-		}else if(!ConsentAnswers.contains(participant.getDataUse())){
+		}else if(!YesNoAnswers.contains(participant.getDataUse())){
 			DataError participantDataError = new DataError();
 			
 			participantDataError.setDataErrorType(DataErrorType.INCORRECT);
@@ -248,7 +248,7 @@ public class DataValidationService implements IDataValidationService {
 			participantDataError.setDataErrorType(DataErrorType.MISSING);
 			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Biospecimen use is missing");
 			participantDataErrors.add(participantDataError);
-		}else if(!ConsentAnswers.contains(participant.getBiospecimenUse())){
+		}else if(!YesNoAnswers.contains(participant.getBiospecimenUse())){
 			DataError participantDataError = new DataError();
 			
 			participantDataError.setDataErrorType(DataErrorType.INCORRECT);
@@ -262,11 +262,11 @@ public class DataValidationService implements IDataValidationService {
 			participantDataError.setDataErrorType(DataErrorType.MISSING);
 			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Data sharing is missing");
 			participantDataErrors.add(participantDataError);
-		}else if(!ConsentAnswers.contains(participant.getDataSharing())){
+		}else if(!YesNoAnswers.contains(participant.getDataSharing())){
 			DataError participantDataError = new DataError();
 			
 			participantDataError.setDataErrorType(DataErrorType.INCORRECT);
-			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Data sharing is incorrect. Use one of the following options"+ConsentAnswers.getValues());
+			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Data sharing is incorrect. Use one of the following options"+YesNoAnswers.getValues());
 			participantDataErrors.add(participantDataError);
 		}
 		
@@ -276,14 +276,18 @@ public class DataValidationService implements IDataValidationService {
 			participantDataError.setDataErrorType(DataErrorType.MISSING);
 			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Biospecimen sharing is missing");
 			participantDataErrors.add(participantDataError);
-		}else if(!ConsentAnswers.contains(participant.getBiospecimenSharing())){
+		}else if(!YesNoAnswers.contains(participant.getBiospecimenSharing())){
 			DataError participantDataError = new DataError();
 			
 			participantDataError.setDataErrorType(DataErrorType.INCORRECT);
-			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Biospecimen sharing is incorrect. Use one of the following options"+ConsentAnswers.getValues());
+			participantDataError.setMessage("Study ID "+participant.getStudyID()+" - Biospecimen sharing is incorrect. Use one of the following options"+YesNoAnswers.getValues());
 			participantDataErrors.add(participantDataError);
 		}
-		
+		if(participantDataErrors.size()==0){
+			participant.setError(false);
+		}else{
+			participant.setError(true);
+		}
 		return participantDataErrors;
 	}
 	
@@ -294,7 +298,7 @@ public class DataValidationService implements IDataValidationService {
 	public List<DataError> checkBiospecimenErrors(Biospecimen biospecimen) {
 		List<DataError> biospecimenDataErrors = new ArrayList<DataError>();
 		
-		if(biospecimen.getStudyID()==null || biospecimen.getStudyID().isEmpty()){
+		if(biospecimen.getParticipant().getStudyID()==null || biospecimen.getParticipant().getStudyID().isEmpty()){
 			DataError biospecimenDataError = new DataError();
 			
 			biospecimenDataError.setDataErrorType(DataErrorType.MISSING);
@@ -306,13 +310,13 @@ public class DataValidationService implements IDataValidationService {
 			DataError biospecimenDataError = new DataError();
 			
 			biospecimenDataError.setDataErrorType(DataErrorType.MISSING);
-			biospecimenDataError.setMessage("Study ID "+biospecimen.getStudyID()+" Biospecimen ID "+biospecimen.getBiospecimenID()+" - Gender is missing");
+			biospecimenDataError.setMessage("Study ID "+biospecimen.getParticipant().getStudyID()+" Biospecimen ID "+biospecimen.getBiospecimenID()+" - Gender is missing");
 			biospecimenDataErrors.add(biospecimenDataError);
 		}else if(!Gender.contains(biospecimen.getGender())){
 			DataError biospecimenDataError = new DataError();
 			
 			biospecimenDataError.setDataErrorType(DataErrorType.INCORRECT);
-			biospecimenDataError.setMessage("Study ID "+biospecimen.getStudyID()+" Biospecimen ID "+biospecimen.getBiospecimenID()+" - Gender is incorrect. Use one of the following options"+Gender.getValues());
+			biospecimenDataError.setMessage("Study ID "+biospecimen.getParticipant().getStudyID()+" Biospecimen ID "+biospecimen.getBiospecimenID()+" - Gender is incorrect. Use one of the following options"+Gender.getValues());
 			biospecimenDataErrors.add(biospecimenDataError);
 		}
 		
@@ -320,7 +324,7 @@ public class DataValidationService implements IDataValidationService {
 			DataError biospecimenDataError = new DataError();
 			
 			biospecimenDataError.setDataErrorType(DataErrorType.MISSING);
-			biospecimenDataError.setMessage(biospecimen.getStudyID()+"(Study ID) : "+biospecimen.getBiospecimenID()+"(Biospecimen ID) - Biospecimen ID is missing");
+			biospecimenDataError.setMessage(biospecimen.getParticipant().getStudyID()+"(Study ID) : "+biospecimen.getBiospecimenID()+"(Biospecimen ID) - Biospecimen ID is missing");
 			biospecimenDataErrors.add(biospecimenDataError);
 		}
 		
@@ -328,13 +332,13 @@ public class DataValidationService implements IDataValidationService {
 			DataError biospecimenDataError = new DataError();
 			
 			biospecimenDataError.setDataErrorType(DataErrorType.MISSING);
-			biospecimenDataError.setMessage(biospecimen.getStudyID()+"(Study ID) : "+biospecimen.getBiospecimenID()+"(Biospecimen ID) -  Name of the responsible person is missing");
+			biospecimenDataError.setMessage(biospecimen.getParticipant().getStudyID()+"(Study ID) : "+biospecimen.getBiospecimenID()+"(Biospecimen ID) -  Collection date is missing");
 			biospecimenDataErrors.add(biospecimenDataError);
-		}else if(biospecimen.getCollectionDate().before(new Date())){
+		}else if(biospecimen.getCollectionDate().after(new Date())){
 			DataError biospecimenDataError = new DataError();
 			
 			biospecimenDataError.setDataErrorType(DataErrorType.MISSING);
-			biospecimenDataError.setMessage(biospecimen.getStudyID()+"(Study ID) : "+biospecimen.getBiospecimenID()+"(Biospecimen ID) - Enrollment date has to be in the past");
+			biospecimenDataError.setMessage(biospecimen.getParticipant().getStudyID()+"(Study ID) : "+biospecimen.getBiospecimenID()+"(Biospecimen ID) - Enrollment date has to be in the past");
 			biospecimenDataErrors.add(biospecimenDataError);
 		}
 		
@@ -342,16 +346,21 @@ public class DataValidationService implements IDataValidationService {
 			DataError biospecimenDataError = new DataError();
 			
 			biospecimenDataError.setDataErrorType(DataErrorType.MISSING);
-			biospecimenDataError.setMessage(biospecimen.getStudyID()+"(Study ID) : "+biospecimen.getBiospecimenID()+"(Biospecimen ID) - Biospecimen type is missing");
+			biospecimenDataError.setMessage(biospecimen.getParticipant().getStudyID()+"(Study ID) : "+biospecimen.getBiospecimenID()+"(Biospecimen ID) - Biospecimen type is missing");
 			biospecimenDataErrors.add(biospecimenDataError);
 		}else if(!BiospecimenTypes.contains(biospecimen.getBiospecimenType())){
 			DataError biospecimenDataError = new DataError();
 			
 			biospecimenDataError.setDataErrorType(DataErrorType.INCORRECT);
-			biospecimenDataError.setMessage(biospecimen.getStudyID()+"(Study ID) : "+biospecimen.getBiospecimenID()+"(Biospecimen ID) - Biospecimen type is incorrect. Use one of the following options "+BiospecimenTypes.getValues());
+			biospecimenDataError.setMessage(biospecimen.getParticipant().getStudyID()+"(Study ID) : "+biospecimen.getBiospecimenID()+"(Biospecimen ID) - Biospecimen type is incorrect. Use one of the following options "+BiospecimenTypes.getValues());
 			biospecimenDataErrors.add(biospecimenDataError);
 		}
 		
+		if(biospecimenDataErrors.size()==0){
+			biospecimen.setError(false);
+		}else{
+			biospecimen.setError(true);
+		}
 		return biospecimenDataErrors;
 	}
 

@@ -13,7 +13,7 @@ import java.util.List;
 public class ShipmentManifest {
 	String manifestNumber;
 	String collectionCentre;
-	String refNumber ;
+	String refNumber;
 	Date dateSent;
 	Integer numberOfBoxes;
 	String responsiblePerson;

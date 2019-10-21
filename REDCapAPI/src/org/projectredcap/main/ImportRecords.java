@@ -28,14 +28,16 @@ public class ImportRecords
 	private BufferedReader reader;
 	private final StringBuffer result;
 	private String line;
-	private final JSONObject record;
-	private final JSONArray data;
-	private final String recordID;
-	private final SecureRandom random;
+	
 
 	@SuppressWarnings("unchecked")
 	public ImportRecords(final Config c)
 	{
+		final JSONObject record;
+		final JSONArray data;
+		final String recordID;
+		final SecureRandom random;
+	
 		random = new SecureRandom();
 		recordID = DigestUtils.sha1Hex(new BigInteger(16, random).toString(16)).substring(0, 16);
 		record = new JSONObject();
@@ -85,8 +87,40 @@ public class ImportRecords
 		reader = null;
 		line = null;
 	}
+	
+	public ImportRecords(final Config c, JSONArray data)
+	{
+		System.out.println(data.toJSONString());
+		params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("token", c.API_TOKEN));
+		params.add(new BasicNameValuePair("content", "record"));
+		params.add(new BasicNameValuePair("format", "json"));
+		params.add(new BasicNameValuePair("type", "flat"));
+		params.add(new BasicNameValuePair("data", data.toJSONString()));
 
-	public void doPost()
+		post = new HttpPost(c.API_URL);
+		post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+		try
+		{
+			post.setEntity(new UrlEncodedFormEntity(params));
+		}
+		catch (final Exception e)
+		{
+			//e.printStackTrace();
+			//return e.getMessage();
+		}
+
+		result = new StringBuffer();
+		client = HttpClientBuilder.create().build();
+		respCode = -1;
+		reader = null;
+		line = null;
+		
+		//return null;
+	}
+
+	public String doPost()
 	{
 		resp = null;
 
@@ -96,20 +130,22 @@ public class ImportRecords
 		}
 		catch (final Exception e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
+			return e.getMessage();
 		}
 
 		if(resp != null)
 		{
 			respCode = resp.getStatusLine().getStatusCode();
-
+			
 			try
 			{
 				reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
 			}
 			catch (final Exception e)
 			{
-				e.printStackTrace();
+				return e.getMessage();
+				//e.printStackTrace();
 			}
 		}
 
@@ -124,11 +160,42 @@ public class ImportRecords
 			}
 			catch (final Exception e)
 			{
-				e.printStackTrace();
+				//e.printStackTrace();
+				return e.getMessage();
 			}
 		}
 
 		System.out.println("respCode: " + respCode);
 		System.out.println("result: " + result.toString());
+		
+		return resp.getStatusLine().getStatusCode()+" "+resp.getStatusLine().getReasonPhrase();
+	}
+
+	/**
+	 * @return the resp
+	 */
+	public HttpResponse getResp() {
+		return resp;
+	}
+
+	/**
+	 * @param resp the resp to set
+	 */
+	public void setResp(HttpResponse resp) {
+		this.resp = resp;
+	}
+
+	/**
+	 * @return the respCode
+	 */
+	public int getRespCode() {
+		return respCode;
+	}
+
+	/**
+	 * @param respCode the respCode to set
+	 */
+	public void setRespCode(int respCode) {
+		this.respCode = respCode;
 	}
 }

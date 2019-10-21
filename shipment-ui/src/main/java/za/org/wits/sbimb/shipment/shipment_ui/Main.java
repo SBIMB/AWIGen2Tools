@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+
 import za.org.wits.sbimb.shipment.Constants;
 import za.org.wits.sbimb.shipment.model.Biospecimen;
 import za.org.wits.sbimb.shipment.model.Feedback;
@@ -27,6 +28,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -110,7 +112,7 @@ public class Main extends Application {
 					switch (tab.getText()){
 						case "Step 1/5: Upload File" :
 							feedback = fileUploadService.postStepOne(filePath);
-							if(feedback.getIsError()==false){
+							if(feedback.getError()==false){
 								shipmentManifest = fileUploadService.preStepTwo();
 								getTabPane(stage, 1);
 								System.out.print("Getting Tab 2: ");
@@ -122,7 +124,7 @@ public class Main extends Application {
 							break;
 						case "Step 2/5: File Validation" :
 							feedback = fileUploadService.postStepTwo();
-							if(feedback.getIsError()==false){
+							if(feedback.getError()==false){
 								getTabPane(stage, 2);
 								System.out.println("Getting Tab 3: ");
 								feedbackTxtArea.setText(feedback.getNote());
@@ -436,6 +438,24 @@ public class Main extends Application {
 				
 				//Create participants table
 				TableView<Participant> participantTableView = new TableView<Participant>();
+				participantTableView.setRowFactory(row -> new TableRow<Participant>(){
+
+					/* (non-Javadoc)
+					 * @see javafx.scene.control.Cell#updateItem(java.lang.Object, boolean)
+					 */
+					@Override
+					protected void updateItem(Participant participant, boolean error) {
+						super.updateItem(participant, error);
+						if(participant == null || participant.isError()==null){
+							setStyle("");
+						}else if(participant.isError()){
+							setStyle("-fx-background-color: #e02c10;");
+						}else{
+							setStyle("-fx-background-color: #36ba36;");
+						}
+					}
+					
+				});
 				for(int i = 1 ; i < Constants.PARTICIPANT_UPLOAD_HEADER.length ; i++){
 					
 					if(Constants.PARTICIPANT_PROP_TYPE[i].equalsIgnoreCase("string")){
@@ -475,6 +495,24 @@ public class Main extends Application {
 				
 				//Create biospecimen table
 				TableView<Biospecimen> biospecimenTableView = new TableView<Biospecimen>();
+				biospecimenTableView.setRowFactory(row -> new TableRow<Biospecimen>(){
+
+					/* (non-Javadoc)
+					 * @see javafx.scene.control.Cell#updateItem(java.lang.Object, boolean)
+					 */
+					@Override
+					protected void updateItem(Biospecimen biospecimen, boolean error) {
+						super.updateItem(biospecimen, error);
+						if(biospecimen == null || biospecimen.isError()==null){
+							setStyle("");
+						}else if(biospecimen.isError()){
+							setStyle("-fx-background-color: #e02c10;");
+						}else{
+							setStyle("-fx-background-color: #36ba36;");
+						}
+					}
+					
+				});
 				for(int i = 1 ; i < Constants.BIOSPECIMEN_UPLOAD_HEADER.length ; i++){
 					TableColumn<Biospecimen, String> tableColumn = new TableColumn<Biospecimen, String>(Constants.BIOSPECIMEN_UPLOAD_HEADER[i]);
 					tableColumn.setCellValueFactory(new PropertyValueFactory<Biospecimen, String>(Constants.BIOSPECIMEN_PROP_VALUE[i]));
@@ -492,7 +530,7 @@ public class Main extends Application {
 		}
 		
 		private GridPane getDataValidationGridPane(){
-			GridPane gridPane = new GridPane();
+			GridPane gridPane = getFileValidationGridPane();
 			return gridPane;
 		}
 		
@@ -513,7 +551,7 @@ public class Main extends Application {
 	        		new EventHandler<ActionEvent>() {
 	        			
 	        			public void handle(final ActionEvent e) {
-	        				
+	        				fileUploadService.postStepThree();
 	        			}
 	        		});
 	        gridPane.add(csvUploadBtn, 1, 5);

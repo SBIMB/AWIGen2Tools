@@ -54,7 +54,7 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
         
         while (sheetIterator.hasNext()) {
             Sheet sheet = sheetIterator.next();
-            worksheets.put(sheet.getSheetName(), sheet);
+            worksheets.put(sheet.getSheetName().toUpperCase(), sheet);
         }
 		return worksheets;
 	}
@@ -303,10 +303,15 @@ public class SpreadsheetContentReader implements ISpreadsheetContentReader {
 	                	
 	                	break;
                 }
-       		}
-    	
+       		}    	
 			rowStrList.add(cellValue);
 		}
+		
+		rowStrList.forEach(cell->{
+			System.out.print(cell.toString()+",");
+		});
+		System.out.println("");
+		
 		return rowStrList;
 	}	
 

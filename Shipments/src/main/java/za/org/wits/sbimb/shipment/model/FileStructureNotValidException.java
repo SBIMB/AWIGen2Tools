@@ -12,6 +12,11 @@ public class FileStructureNotValidException extends Exception {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = 2998820757676639457L;
+
+	/**
+	 * 
+	 */
 	public FileStructureNotValidException() {
 		// TODO Auto-generated constructor stub
 	}

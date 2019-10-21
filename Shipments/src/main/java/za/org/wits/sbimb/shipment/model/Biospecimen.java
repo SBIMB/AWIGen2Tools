@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class Biospecimen {
 	String biospecimenID;
-	String studyID;
+	Participant participant;
 	String gender;
 	Date collectionDate;
 	String biospecimenType;
@@ -19,6 +19,7 @@ public class Biospecimen {
 	String row;
 	String col;
 	Boolean manualChecked;
+	Boolean error;
 	/**
 	 * @return the biospecimenID
 	 */
@@ -31,17 +32,18 @@ public class Biospecimen {
 	public void setBiospecimenID(String biospecimenID) {
 		this.biospecimenID = biospecimenID;
 	}
+	
 	/**
-	 * @return the studyID
+	 * @return the participant
 	 */
-	public String getStudyID() {
-		return studyID;
+	public Participant getParticipant() {
+		return participant;
 	}
 	/**
-	 * @param studyID the studyID to set
+	 * @param participant the participant to set
 	 */
-	public void setStudyID(String studyID) {
-		this.studyID = studyID;
+	public void setParticipant(Participant participant) {
+		this.participant = participant;
 	}
 	/**
 	 * @return the gender
@@ -126,5 +128,17 @@ public class Biospecimen {
 	 */
 	public void setManualChecked(Boolean mamualChecked) {
 		this.manualChecked = mamualChecked;
+	}
+	/**
+	 * @return the hasError
+	 */
+	public Boolean isError() {
+		return error;
+	}
+	/**
+	 * @param hasError the Error to set
+	 */
+	public void setError(Boolean error) {
+		this.error = error;
 	}	
 }

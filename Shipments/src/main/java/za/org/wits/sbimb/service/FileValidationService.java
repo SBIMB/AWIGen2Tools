@@ -60,16 +60,16 @@ public class FileValidationService implements IFileValidationService{
 		
 		sheets = iscr.getWorksheets(workbook);
 		
-		if(!sheets.containsKey("Container Report and Sample Man")){
+		if(!sheets.containsKey("CONTAINER REPORT AND SAMPLE MAN")){
 			isSummarySheetMissing=true;
 		}
 		
-		if(!sheets.containsKey("Participants")){
+		if(!sheets.containsKey("PARTICIPANTS")){
 			isParticipantsSheetMissing=true;
 		}
-		if(!sheets.containsKey("Plate 1 (10x10)")){
+		/*if(!sheets.containsKey("Plate 1 (10x10)")){
 			isBiospecimenSheetMissing=true;
-		}
+		}*/
 		
 		if(isSummarySheetMissing && isParticipantsSheetMissing && isBiospecimenSheetMissing){
 			throw new FileStructureNotValidException("The manifest summary, participants and biospecimen worksheet are missing.");

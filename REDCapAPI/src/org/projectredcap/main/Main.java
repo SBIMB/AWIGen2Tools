@@ -4,14 +4,17 @@ public class Main
 {
 	public static void main(final String[] args)
 	{
-		final Config c = new Config("03F69DF758E684976D55B604ADDF2F31",
-				"https://redcap.core.wits.ac.za/redcap/api/",
-			   "record",
-			    "csv",
-			   "flat",
-			   "raw",
-			   "",
-			   null);
+		final Config c = new Config("https://redcap.core.wits.ac.za/redcap/api/", //API URL
+				"03F69DF758E684976D55B604ADDF2F31", //API Token
+				"flat", //API CONTENT
+				"csv", //API FORMAT
+				"record", //API TYPE
+				"overwrite", //API_OVERWRITE_BEHAVIOR 
+				"true", //API FORCE AUTO NUMBER
+				"DMY", //API DATE FORMAT 
+			    "raw", //API ROW OR LABEL
+			   "", //API FIELDS
+			   null); //API REPORT ID
 		String result= null;
 			    
 

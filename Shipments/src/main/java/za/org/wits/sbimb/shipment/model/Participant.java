@@ -27,6 +27,7 @@ public class Participant {
 	String dataSharing; //Data Sharing
 	String biospecimenSharing; //Biospecimen Sharing
 	List<Biospecimen> biospecimens;
+	Boolean error;
 	/**
 	 * @return the studyID
 	 */
@@ -206,5 +207,17 @@ public class Participant {
 	 */
 	public void setBiospecimens(List<Biospecimen> biospecimens) {
 		this.biospecimens = biospecimens;
+	}
+	/**
+	 * @return the error
+	 */
+	public Boolean isError() {
+		return error;
+	}
+	/**
+	 * @param error the error to set
+	 */
+	public void setError(Boolean error) {
+		this.error = error;
 	}
 }
